@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Seamas.BaiduMap</PackageId>
+    <Authors>Seamas</Authors>
+    <Product>Seamas.BaiduMap</Product>
+    <Description>BaiduMap Web Api</Description>
+    <Copyright>MIT</Copyright>
+    <PackageLicenseUrl>https://github.com/Seamas/BaiduMapWebApi/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/Seamas/BaiduMapWebApi.git</RepositoryUrl>
+    <PackageReleaseNotes>0.9.0 支持sn验证和ip白名单验证方式
+包含地点检索 、地理编码、普通IP定位、地点输入提示和路线规划接口
+反序列化时保存元数据字符串到对象</PackageReleaseNotes>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <FileVersion>0.9.0.0</FileVersion>
+    <Version>0.9.0</Version>
+    <Company />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Util\" />
+    <Folder Include="Attribute\" />
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="*" />
+  </ItemGroup>
+</Project>
