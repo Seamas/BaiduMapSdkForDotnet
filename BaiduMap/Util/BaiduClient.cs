@@ -55,10 +55,11 @@ namespace BaiduMap.Util
         /// <typeparam name="T"></typeparam>
         /// <param name="request"></param>
         /// <returns></returns>
-        public Task<T> ExecuteAsync<T>(IBaiduRequest<T> request)
+        public async Task<T> ExecuteAsync<T>(IBaiduRequest<T> request)
             where T: BaiduResponse
         {
-            return Task.Run(() => Execute(request));
+            var queryString = BuildQueryString(request);
+            return await Task.Run(() => GetResponse<T>(request.Host, request.Address, queryString));
         }
 
         /// <summary>
@@ -67,24 +68,13 @@ namespace BaiduMap.Util
         /// <typeparam name="T"></typeparam>
         /// <param name="request"></param>
         /// <returns></returns>
-        public string ExecuteReadString<T>(IBaiduRequest<T> request)
-            where T: BaiduResponse
-        {
-            var queryString = BuildQueryString(request);
-            return GetResponseString(request.Host, request.Address, queryString);
-        }
-
-        /// <summary>
-        /// 异步调用返回字符串
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="request"></param>
-        /// <returns></returns>
         public Task<string> ExecuteReadStringAsync<T>(IBaiduRequest<T> request)
             where T: BaiduResponse
         {
-            return Task.Run(() => ExecuteReadString(request));
+            var queryString = BuildQueryString(request);
+            return GetResponseStringAsync(request.Host, request.Address, queryString);
         }
+
         
         /// <summary>
         /// 获取返回结果字符串
@@ -93,11 +83,11 @@ namespace BaiduMap.Util
         /// <param name="address"></param>
         /// <param name="queryString"></param>
         /// <returns></returns>
-        private string GetResponseString(string host, string address, string queryString)
+        private Task<string> GetResponseStringAsync(string host, string address, string queryString)
         {
             var url = host + address + "?" + queryString;
             var client = new HttpClient();
-            return client.GetStringAsync(url).Result;
+            return client.GetStringAsync(url);
         }
 
         /// <summary>
@@ -111,11 +101,14 @@ namespace BaiduMap.Util
         private T GetResponse<T>(string host, string address, string queryString)
             where T : BaiduResponse
         {
-            var respString = GetResponseString(host, address, queryString);
+            var respString = GetResponseStringAsync(host, address, queryString).Result;
             var result = JsonConvert.DeserializeObject<T>(respString);
             result.Meta = respString;
             return result;
         }
+
+
+        # region 构建查询字符串
 
         /// <summary>
         /// 构建查询字符串
@@ -166,5 +159,7 @@ namespace BaiduMap.Util
             dictionary.Add("sn", sn);
             return UrlUtil.BuildQuery(dictionary);
         }
+
+        # endregion
     }
 }
