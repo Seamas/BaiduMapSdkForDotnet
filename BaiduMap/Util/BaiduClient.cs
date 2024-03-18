@@ -45,8 +45,7 @@ namespace BaiduMap.Util
         public T Execute<T>(IBaiduRequest<T> request)
             where T : BaiduResponse
         {
-            var queryString = BuildQueryString(request);
-            return GetResponse<T>(request.Host, request.Address, queryString);
+            return ExecuteAsync(request).Result;
         }
 
         /// <summary>
@@ -58,9 +57,13 @@ namespace BaiduMap.Util
         public async Task<T> ExecuteAsync<T>(IBaiduRequest<T> request)
             where T: BaiduResponse
         {
-            var queryString = BuildQueryString(request);
-            return await Task.Run(() => GetResponse<T>(request.Host, request.Address, queryString));
+            var respString = await ExecuteReadStringAsync(request);
+            var result = JsonConvert.DeserializeObject<T>(respString);
+            result.Meta = respString;
+            return result;
         }
+
+        #region 请求返回字符串
 
         /// <summary>
         /// 返回字符串
@@ -90,22 +93,7 @@ namespace BaiduMap.Util
             return client.GetStringAsync(url);
         }
 
-        /// <summary>
-        /// 采用Get方式发送请求
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="host"></param>
-        /// <param name="address"></param>
-        /// <param name="queryString"></param>
-        /// <returns></returns>
-        private T GetResponse<T>(string host, string address, string queryString)
-            where T : BaiduResponse
-        {
-            var respString = GetResponseStringAsync(host, address, queryString).Result;
-            var result = JsonConvert.DeserializeObject<T>(respString);
-            result.Meta = respString;
-            return result;
-        }
+        #endregion 请求返回字符串
 
 
         # region 构建查询字符串
